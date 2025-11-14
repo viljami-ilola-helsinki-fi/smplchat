@@ -1,5 +1,4 @@
 #!/bin/sh
-
 ECHO="`which echo` -e"
 
 [ x$1 = x ] && $ECHO "\
@@ -22,6 +21,9 @@ install    Build PyPI package form source and install it
 # Ensure ~/.local/bin in the PATH.
 echo $PATH | grep /.local/bin > /dev/null \
 	|| export PATH="$HOME/.local/bin:$PATH"
+
+
+DEVSH_PATH=`dirname "$0"`
 
 PIP=`which pipx`
 [ x$PIP = x ] && PIP=`which pip`
@@ -52,8 +54,8 @@ case $1 in
 		;;
 	
 	dev)
-		$0 install-poetry \
-		&& $0 poetry-dev-deps
+		"$0" install-poetry \
+		&& "$0" poetry-dev-deps
 		;;
 
 	run)
@@ -61,30 +63,30 @@ case $1 in
 		;;
 
 	pytest)
-		poetry run pytest -v
+		poetry run pytest -v "$DEVSH_PATH"
 		;;
 
 	pylint)
-		poetry run pylint src/
+		poetry run pylint "$DEVSH_PATH"/src/
 		;;
 
 	coverage)
-		poetry run coverage run -m pytest -v
+		poetry run coverage run -m pytest -v "$DEVSH_PATH"
 		;;
 
 	covhtml)
-		$0 coverage \
+		"$0" coverage \
 		&& poetry run coverage html
 		;;
 
 	covff)
-		$0 covhtml \
-		&& (firefox htmlcov/index.html || echo Cannot lauch browser.)
+		"$0" covhtml \
+		&& (firefox-bin htmlcov/index.html || echo Cannot lauch browser.)
 		;;
 
 	all)	
-		$0 covff \
-		&& $0 pylint
+		"$0" covff \
+		&& "$0" pylint 
 		;;
 
 	poetry-build)
@@ -92,9 +94,9 @@ case $1 in
 		;;
 
 	install)
-		$0 install-poetry \
-		&& $0 poetry-build \
-		&& $0 install-latest-build
+		"$0" install-poetry \
+		&& "$0" poetry-build \
+		&& "$0" install-latest-build
 		;;
 
 	*)	
